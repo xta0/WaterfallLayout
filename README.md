@@ -7,4 +7,4 @@ Explore the CollectionView layout system.
 3. Image and data caches
 4. Tap and Pin zoom
 
-![layout](https://github.com/xta0/WaterfallLayout/blob/main/layout.png)
+![layout](https://github.com/xta0/WaterfallLayout/blob/main/waterfall.png)

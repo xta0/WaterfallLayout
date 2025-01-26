@@ -46,28 +46,41 @@ class PhotoCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
     }
-    
+    //            // download the image
+    //            ImageDownloader.shared.downloadImage(URL(string: photo.url)!, identifier: photo.identifier) { [weak self] (identifier, image) in
+    //                guard let strongSelf = self else {
+    //                    return
+    //                }
+    //                guard let image else {
+    //                    return
+    //                }
+    //                if identifier != strongSelf.photo?.identifier {
+    //                    return
+    //                }
+    //                DispatchQueue.main.async {
+    //                    strongSelf.imageView.image = image
+    //                }
+    //            }
+
     func setPhoto(_ photo: Photo) {
         self.photo = photo
         // read image from a memory cache
-        if let image = ImageDownloader.shared.fetchImageFromCache(photo.url) {
+        if let image = ImageDownloader.shared.fetchImageFromMemoryCache(photo.thumb_url) {
             imageView.image = image
         } else {
-            // download the image
-            ImageDownloader.shared.downloadImage(URL(string: photo.url)!, identifier: photo.identifier) { [weak self] (identifier, image) in
+            Task { [weak self] in
                 guard let strongSelf = self else {
                     return
                 }
-                guard let image else {
+                let (id, image) = await ImageDownloader.shared.fetchImage(URL(string: photo.thumb_url)!, identifier: photo.identifier)
+                if id != strongSelf.photo?.identifier {
                     return
                 }
-                if identifier != strongSelf.photo?.identifier {
-                    return
-                }
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     strongSelf.imageView.image = image
                 }
             }
+
         }
         titleLabel.text = photo.title
     }

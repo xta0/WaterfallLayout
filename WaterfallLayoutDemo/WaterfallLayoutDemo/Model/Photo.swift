@@ -6,10 +6,11 @@
 //
 
     
-struct Photo {
+struct Photo: Encodable, Decodable {
     let identifier: String
     let title: String
-    let url: String
+    let thumb_url: String
+    let full_url: String
     let width: Int
     let height: Int
 }

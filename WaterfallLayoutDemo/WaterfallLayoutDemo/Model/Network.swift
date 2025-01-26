@@ -42,8 +42,9 @@ extension Endpoint where T == [Photo] {
                            let urls = rawPhoto["urls"] as? [String: Any],
                            let width = rawPhoto["width"] as? Int,
                            let height = rawPhoto["height"] as? Int,
-                           let imageURL = urls["thumb"] as? String {
-                            photos.append(Photo(identifier: identifier, title: title, url: imageURL, width: width, height: height))
+                           let thumbImageURL = urls["thumb"] as? String,
+                           let fullImageURL = urls["full"] as? String {
+                            photos.append(Photo(identifier: identifier, title: title, thumb_url: thumbImageURL, full_url: fullImageURL, width: width, height: height))
                         }
                     }
                     return photos
@@ -84,8 +85,9 @@ extension Endpoint where T == [Photo] {
                            let urls = rawPhoto["urls"] as? [String: Any],
                            let width = rawPhoto["width"] as? Int,
                            let height = rawPhoto["height"] as? Int,
-                           let imageURL = urls["thumb"] as? String {
-                            photos.append(Photo(identifier: identifier, title: title, url: imageURL, width: width, height: height))
+                           let thumbImageURL = urls["thumb"] as? String,
+                           let fullImageURL = urls["full"] as? String {
+                            photos.append(Photo(identifier: identifier, title: title, thumb_url: thumbImageURL, full_url: fullImageURL, width: width, height: height))
                         }
                     }
                     return photos

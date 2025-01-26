@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 protocol WaterfallLayoutDelegate: AnyObject {
     func collectionView(_ collectionView: UICollectionView, photoSizeForItemAt indexPath: IndexPath) -> CGSize
 }

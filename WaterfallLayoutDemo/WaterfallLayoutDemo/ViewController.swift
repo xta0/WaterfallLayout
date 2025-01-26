@@ -13,11 +13,12 @@ import UIKit
  2. Click and drag & drop
  
  Data:
- 1. Image cache
- 2. HTTP data cache
+ 1. Image cache (Done)
+ 2. Photo cache (Done)
  3. Decoding large images
  */
 
+@MainActor
 class ViewController: UIViewController {
     enum Layout {
         case grid
@@ -144,7 +145,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func reload() {
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.model.reset()
             strongSelf.collectionView.reloadData()
@@ -206,6 +207,32 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
             }
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // show the gallery view
+        let photo = self.model.photos[indexPath.item]
+//        guard let thumbnailImage = ImageDownloader.shared.fetchImageFromMemoryCache(photo.thumb_url) else {
+//            return
+//        }
+        let insets = self.view.safeAreaInsets
+        let contentFrame = CGRect(
+            x: insets.left,
+            y: insets.top,
+            width: view.frame.width - insets.left - insets.right,
+            height: view.frame.height - insets.top - insets.bottom
+        )
+        let galleryView = PhotoGallary(frame: CGRectMake(contentFrame.origin.x,
+                                                         contentFrame.origin.y,
+                                                         contentFrame.size.width,
+                                                         contentFrame.size.height))
+        galleryView.delegate = self
+        galleryView.showImage(photo.full_url)
+        galleryView.alpha = 0
+        self.view.addSubview(galleryView)
+        UIView.animate(withDuration: 0.5) {
+            galleryView.alpha = 1.0
+        }
+    }
 }
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
@@ -233,3 +260,22 @@ extension ViewController: WaterfallLayoutDelegate {
 }
 
 
+extension ViewController: PhotoGalleryDelegate {
+    func presentAlert(title: String, message: String) {
+        
+        // 1. Create alert controller with title and message
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: .alert)
+        
+        // 2. Add an action (button) to the alert
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            // Action to execute when “OK” is tapped (optional)
+            print("OK tapped")
+        }
+        alertController.addAction(okAction)
+        
+        // 3. Present the alert
+        present(alertController, animated: true, completion: nil)
+    }
+}
